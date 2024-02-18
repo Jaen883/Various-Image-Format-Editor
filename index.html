@@ -1,0 +1,90 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <title>JPG to PNG Converter</title>
+</head>
+<body>
+<form> 
+  <select id="input-format-select"> 
+    <option value="png">PNG</option> 
+    <option value="bmp">BMP</option> 
+    <option value="webm">WEBM</option> 
+    <option value="webp">WEBP</option> 
+    <option value="gif">GIF</option> 
+    <option value="jpeg">JPEG</option> 
+    <option value="tiff">TIFF</option> 
+  </select> 
+
+  <select id="output-format-select"> 
+    <option value="png">PNG</option> 
+    <option value="bmp">BMP</option> 
+    <option value="webm">WEBM</option> 
+    <option value="webp">WEBP</option> 
+    <option value="gif">GIF</option> 
+    <option value="jpeg">JPEG</option> 
+    <option value="tiff">TIFF</option> 
+    <option value="psd">PSD</option> 
+    <option value="eps">EPS</option> 
+    <option value="html">HTML</option>
+  </select> 
+
+  <input type="file" id="input-file"> 
+  <button type="button" id="convert-btn">Convert</button> 
+</form>
+  
+  <script>
+document.getElementById('convert-btn').addEventListener('click', function() { 
+  var inputFile = document.getElementById('input-file').files[0]; 
+  var inputFormat = document.getElementById('input-format-select').value; 
+  var outputFormat = document.getElementById('output-format-select').value; 
+  if (inputFile.type === 'image/' + inputFormat || inputFile.type === 'image/tiff' || inputFile.type === 'image/vnd.adobe.photoshop' || inputFile.type === 'image/x-eps') { 
+    var reader = new FileReader(); 
+    reader.onload = function() { 
+      if(outputFormat === 'html') { 
+        var canvas = document.createElement('canvas'); 
+        var image = new Image(); 
+        image.src = reader.result; 
+        image.onload = function() { 
+          canvas.width = image.width; 
+          canvas.height = image.height; 
+          var ctx = canvas.getContext('2d'); 
+          ctx.drawImage(image, 0, 0); 
+          var imgData = canvas.toDataURL('image/png'); 
+          var html = '<img src="' + imgData + '">'; 
+          var link = document.createElement('a'); 
+          link.href = 'data:text/html;charset=utf-8,' + encodeURIComponent(html); 
+          link.download = 'image.html'; 
+          document.body.appendChild(link); 
+          link.click(); 
+          document.body.removeChild(link); 
+        }; 
+      } else { 
+        var image = new Image(); 
+        image.src = reader.result; 
+        image.onload = function() { 
+          var canvas = document.createElement('canvas'); 
+          canvas.width = image.width; 
+          canvas.height = image.height; 
+          var ctx = canvas.getContext('2d'); 
+          ctx.drawImage(image, 0, 0); 
+          var imgData = canvas.toDataURL('image/' + outputFormat); 
+          var link = document.createElement('a'); 
+          link.href = imgData; 
+          link.download = 'image.' + outputFormat; 
+          document.body.appendChild(link); 
+          link.click(); 
+          document.body.removeChild(link); 
+        }; 
+      } 
+    }; 
+    reader.readAsDataURL(inputFile); 
+  } else { 
+    alert('Please select a valid ' + inputFormat.toUpperCase() + ' file.'); 
+  } 
+}); 
+  </script>
+  
+
+</body>
+</html>
